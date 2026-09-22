@@ -1,20 +1,34 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using FrameRecall.DataAccess;
+using FrameRecall.DataAccess.Models;
+using FrameRecall.Services;
+
+using MongoDB.Driver;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-// Добавление сервисов
+builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+
+string mongoConnectionString = builder.Configuration.GetConnectionString("MongoDb")
+    ?? "mongodb://localhost:27017";
+string mongoDatabaseName = builder.Configuration["MongoDb:DatabaseName"]
+    ?? "FrameRecall";
+
+MongoClient mongoClient = new(mongoConnectionString);
+IMongoDatabase database = mongoClient.GetDatabase(mongoDatabaseName);
+
+builder.Services.AddSingleton(database);
+builder.Services.AddScoped<IRepository<Film>, FilmRepository>();
+builder.Services.AddScoped<IFilmService, FilmService>();
 
 WebApplication app = builder.Build();
 
-// Настройка middleware для development окружения
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
 app.UseHttpsRedirection();
+app.MapControllers();
 
 app.Run();
