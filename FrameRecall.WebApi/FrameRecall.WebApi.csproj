@@ -13,13 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\.dockerignore">
-      <Link>.dockerignore</Link>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\FrameRecall.Services\FrameRecall.Services.csproj"/>
+    <ProjectReference Include="..\FrameRecall.DataAccess\FrameRecall.DataAccess.csproj"/>
   </ItemGroup>
 
 </Project>
